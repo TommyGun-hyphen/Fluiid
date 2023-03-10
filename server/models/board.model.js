@@ -5,12 +5,10 @@ const Board = mongoose.model('Board', new mongoose.Schema({
     description: {type:String, required: false},
     creation_date: {type:Date, required: true},
     last_date: {type:Date, required: true},
-    tasks: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Task'
-        }
-    ],
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'project'
+    },
 }));
 
 module.exports = Board;

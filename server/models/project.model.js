@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Project = mongoose.model("Project", new mongoose.Schema({
     title: {type: String, required: true},
     description: {type: String, required: false},
-    isPublic: {type: Boolean, default: false},
+    is_public: {type: Boolean, default: false},
     creation_date: {type: Date, required: true},
     last_date: {type: Date, required: true},
     owner: {
@@ -23,10 +23,10 @@ const Project = mongoose.model("Project", new mongoose.Schema({
             ]
         }
     ],
-    boards: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Board'
-    }]
+    // boards: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Board'
+    // }]
 }))
 
 module.exports = Project;

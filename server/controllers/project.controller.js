@@ -17,22 +17,7 @@ exports.index = (req, res) => {
 }
 //get one project by :id
 exports.show = (req, res) => {
-    let projectId = req.params.project_id;
-    if(!isValidObjectId(projectId)){
-        res.status(404).send({message: "Project not found!"});
-        return;
-    }
-    Project.findById(projectId).exec((err, project) => {
-        if(err){
-            res.status(500).send({message: err});
-            return;
-        }
-        if(project){
-            res.send({project});
-            return;
-        }
-        res.status(404).send({message: "Project not found!"});
-    });
+    res.send(req.project);
 }
 
 //store new project
@@ -45,7 +30,7 @@ exports.store = (req, res) => {
     let project = new Project({
         title: req.body.title,
         description: req.body.description || null,
-        isPublic: req.body.isPublic || false,
+        is_public: req.body.is_public || false,
         creation_date: new Date(),
         owner: req.user._id,
         last_date: new Date(),
@@ -63,28 +48,32 @@ exports.store = (req, res) => {
 //delete project if it belongs to logged in user
 
 exports.destroy = (req, res) => {
-    if(!isValidObjectId(req.params.project_id)){
-        res.status(404).send({message: "Project not found!"});
+    if(!project.owner.equals(req.user.id)){
+        //not equals //user does not own project
+        res.status(403).send({message: "Unauthorized!"});
         return;
     }
-
-    Project.findOne({
-        id: req.params.projectId
-    }).exec((err, project) => {
+    project.remove((err) => {
         if(err){
             res.status(500).send({message: err});
             return;
         }
-        if(!project){
-            res.status(404).send({message: "Project not found!"});
-            return;
-        }
-
-        if(!project.owner.equals(req.user.id)){
-            //not equals //user does not own project
-            res.status(403).send({message: "Unauthorized!"});
-            return;
-        }
         res.send({message: "Project deleted successfully"});
+
+    })
+}
+
+exports.update = (req, res) => {
+    req.project.update({
+        title: req.body.title || req.project.title,
+        description: req.body.description || req.project.description,
+        is_public: req.body.is_public || req.project.is_public,
+        last_date: new Date()
+    }).exec(err=>{
+        if(err){
+            res.status(500).send({message: err});
+            return;
+        }
+        res.status(200).send({message: "Project updated successfully"});
     })
 }
